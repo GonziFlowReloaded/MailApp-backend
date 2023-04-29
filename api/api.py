@@ -1,6 +1,8 @@
 from flask import Flask, request, jsonify
 from classes.userManager import UserManager
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user
+from classes.user import Users
+
 
 app = Flask(__name__)
 
@@ -92,7 +94,11 @@ def unread():
         current_user.unread_email(index)
         return jsonify({'status': 'unread successful', 'mail': current_user.mail, 'nombre': current_user.nombre, 'emails': current_user.emails})
     
+usuarioPrueba1 = Users('usuario1', 'contraseña1')
+usuarioPrueba2 = Users('usuario2', 'contraseña2')
 
+UserManager.add_user(usuarioPrueba1)
+UserManager.add_user(usuarioPrueba2)
         
 
 
