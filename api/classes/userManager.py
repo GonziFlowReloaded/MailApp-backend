@@ -1,11 +1,12 @@
-from user import Users
+from classes.user import Users
 
 class UserManager():
     def __init__(self):
         self.users = []
 
-    def add_user(self, user: Users):
-        self.users.append(user)
+    def add_user(self, users: Users):
+        users.id = len(self.users)
+        self.users.append(users)
 
     def get_user(self, nombre):
         for user in self.users:

@@ -1,4 +1,4 @@
-from emailStrategy import EmailStrategy
+from classes.emailStrategy import EmailStrategy
 
 class SortByDate(EmailStrategy):
     def sort_emails(self, emails):

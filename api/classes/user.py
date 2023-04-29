@@ -1,4 +1,4 @@
-from email import Email
+from classes.email import Email
 
 class Users():
     def __init__(self, nombre, contraseña):
@@ -6,12 +6,18 @@ class Users():
         self.nombre = nombre
         self.contraseña = contraseña
         self.emails = []
+        self.is_active = True 
+        self.id = 0
 
     def add_email(self, email: Email):
         self.emails.append(email)
 
     def get_emails(self):
         return self.emails
+    
+    def get_id(self):
+        return self.id
+    
     
     
     
