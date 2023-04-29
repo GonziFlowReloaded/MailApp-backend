@@ -1,4 +1,5 @@
 import datetime
+from classes.user import Users
 
 class Email():
     def __init__(self, subject, body, sender, receiver):

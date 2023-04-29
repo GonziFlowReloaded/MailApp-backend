@@ -3,6 +3,7 @@ from classes.userManager import UserManager
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user
 from classes.user import Users
 import os
+from classes.email import Email
 
 app = Flask(__name__)
 login_manager_app = LoginManager(app)
@@ -12,6 +13,9 @@ user_manager.add_user(Users('usuario1', 'contraseña1'))
 user_manager.add_user(Users('usuario2', 'contraseña2'))
         
 
+@login_manager_app.user_loader
+def load_user(user_id):
+    return user_manager.users[int(user_id)]
 
 
 
@@ -22,6 +26,7 @@ def login():
         username = request_data['username']
         password = request_data['password']
         if user_manager.login(username, password):
+            
             user = user_manager.get_user(username)
             login_user(user)
             return jsonify({'status': 'login successful', 'mail': user.mail, 'nombre': user.nombre, 'emails': user.emails})
@@ -51,19 +56,25 @@ def logout():
 @login_required
 def buzon():
     if request.method == 'GET':
-        return jsonify({'status': 'buzon successful', 'mail': current_user.mail, 'nombre': current_user.nombre, 'emails': current_user.emails})
+        lista = []
+        for mail in current_user.emails:
+            lista.append(jsonify({'sender': mail.sender, 'subject': mail.subject, 'body': mail.body, 'date': mail.date}))
+        return jsonify({'status': 'buzon successful', 'mail': current_user.mail, 'nombre': current_user.nombre, 'emails': lista})
     
 @app.route('/send', methods=['POST'])
 @login_required
 def send():
     if request.method == 'POST':
         request_data = request.get_json()
+        sender = current_user.mail
         mail = request_data['mail']
         subject = request_data['subject']
         body = request_data['body']
         if user_manager.get_user_by_mail(mail) is not None:
-            user_manager.get_user_by_mail(mail).add_email(mail, subject, body)
-            return jsonify({'status': 'send successful'})
+            email_to_send = Email(subject, body, sender, mail)
+            reciver = user_manager.get_user_by_mail(mail)
+            reciver.add_email(email_to_send)
+            return jsonify({'status': 'send successful', 'reciver': reciver.mail})
         else:
             return jsonify({'status': 'send failed'})
         
