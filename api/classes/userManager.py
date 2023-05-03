@@ -1,4 +1,5 @@
 from classes.user import Users
+from classes.email import Email
 
 class UserManager():
     def __init__(self):
@@ -25,5 +26,10 @@ class UserManager():
             if user.nombre == nombre and user.contraseña == contraseña:
                 return True
         return False
+    
+    def sendMail(self, email_to_send: Email):
+        for user in self.users:
+            if user.mail == email_to_send.receiver:
+                user.add_email(email_to_send)
     
     
