@@ -11,8 +11,8 @@ app.secret_key = os.urandom(12)
 user_manager = UserManager()
 user_manager.add_user(Users('usuario1', 'contraseña1'))
 user_manager.add_user(Users('usuario2', 'contraseña2'))
-        
 
+        
 @login_manager_app.user_loader
 def load_user(user_id):
     return user_manager.users[int(user_id)]
