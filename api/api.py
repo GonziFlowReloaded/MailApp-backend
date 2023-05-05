@@ -49,8 +49,9 @@ def register():
 @login_required
 def logout():
     if request.method == 'POST':
+        userActual = current_user.mail
         logout_user()
-        return jsonify({'status': 'logout successful'})
+        return jsonify({'status': 'logout successful', 'user': userActual})
     
 @app.route('/buzon', methods=['GET'])
 @login_required
@@ -58,9 +59,12 @@ def buzon():
     if request.method == 'GET':
         lista = []
         for mail in current_user.emails:
-            lista.append(jsonify({'sender': mail.sender, 'subject': mail.subject, 'body': mail.body, 'date': mail.date}))
-        return jsonify({'status': 'buzon successful', 'mail': current_user.mail, 'nombre': current_user.nombre, 'emails': lista})
-    
+            mail_data = {'sender': mail.sender, 'subject': mail.subject, 'body': mail.body, 'date': mail.date}
+            lista.append(mail_data)
+        response_data = {'status': 'buzon successful', 'mail': current_user.mail, 'nombre': current_user.nombre, 'emails': lista}
+        return jsonify(response_data)
+
+
 @app.route('/send', methods=['POST'])
 @login_required
 def send():
@@ -70,13 +74,13 @@ def send():
         mail = request_data['mail']
         subject = request_data['subject']
         body = request_data['body']
-        if user_manager.get_user_by_mail(mail) is not None:
-            email_to_send = Email(subject, body, sender, mail)
-            reciver = user_manager.get_user_by_mail(mail)
-            reciver.add_email(email_to_send)
-            return jsonify({'status': 'send successful', 'reciver': reciver.mail})
-        else:
+        email_to_send = Email(subject, body, current_user.mail, mail)
+        try:
+            user_manager.sendMail(email_to_send=email_to_send)
+            return jsonify({'status': 'send successful'})
+        except:
             return jsonify({'status': 'send failed'})
+            
         
 @app.route('/buzon/sort', methods=['POST'])
 @login_required
