@@ -29,7 +29,7 @@ def login():
             
             user = user_manager.get_user(username)
             login_user(user)
-            return jsonify({'status': 'login successful', 'mail': user.mail, 'nombre': user.nombre, 'emails': user.emails})
+            return jsonify({'status': 'login successful', 'mail': user.mail, 'nombre': user.nombre})
         else:
             return jsonify({'status': 'login failed'})
 
