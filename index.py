@@ -1,10 +1,10 @@
 from flask import Flask, request, jsonify
-from classes.userManager import UserManager
+from api.classes.userManager import UserManager
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user
-from classes.user import Users
+from api.classes.user import Users
 import os
-from classes.email import Email
-from classes.sortStrategy import SortByDate, SortBySender, SortBySubject, SortByReaded
+from api.classes.email import Email
+from api.classes.sortStrategy import SortByDate, SortBySender, SortBySubject, SortByReaded
 
 app = Flask(__name__)
 login_manager_app = LoginManager(app)
@@ -23,7 +23,7 @@ def index():
     return 'Hello World'
 
     
-
+#----------------------------------------------Login--------------------------------------------------------------#
 
 @app.route('/login', methods=['POST'])
 def login():
@@ -137,7 +137,9 @@ def sort():
             response_data = {'status': 'buzon successful', 'mail': current_user.mail, 'nombre': current_user.nombre, 'emails': lista}
         
         return jsonify(response_data)
-    
+
+#----------------------------------------------Delete--------------------------------------------------------------#
+#A revisar
 @app.route('/buzon/delete', methods=['POST'])
 @login_required
 def delete():
@@ -147,25 +149,6 @@ def delete():
         current_user.delete_email(index)
         return jsonify({'status': 'delete successful', 'mail': current_user.mail, 'nombre': current_user.nombre, 'emails': current_user.emails})
     
-@app.route('/buzon/read', methods=['POST'])
-@login_required
-def read():
-    if request.method == 'POST':
-        request_data = request.get_json()
-        index = request_data['index']
-        current_user.read_email(index)
-        return jsonify({'status': 'read successful', 'mail': current_user.mail, 'nombre': current_user.nombre, 'emails': current_user.emails})
-    
-@app.route('/buzon/unread', methods=['POST'])
-@login_required
-def unread():
-    if request.method == 'POST':
-        request_data = request.get_json()
-        index = request_data['index']
-        current_user.unread_email(index)
-        return jsonify({'status': 'unread successful', 'mail': current_user.mail, 'nombre': current_user.nombre, 'emails': current_user.emails})
-    
-
 
 if __name__ == '__main__':
     app.run(debug=True, port=4000)
