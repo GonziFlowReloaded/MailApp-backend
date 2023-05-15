@@ -10,6 +10,7 @@ class Users():
         self.id = 0
 
     def add_email(self, email):
+        email.id = len(self.emails)
         self.emails.append(email)
 
     def get_emails(self):
