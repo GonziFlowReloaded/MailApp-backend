@@ -18,6 +18,11 @@ user_manager.add_user(Users('usuario2', 'contraseña2'))
 def load_user(user_id):
     return user_manager.users[int(user_id)]
 
+@app.route('/', methods=['GET'])
+def index():
+    return 'Hello World'
+
+    
 
 
 @app.route('/login', methods=['POST'])
