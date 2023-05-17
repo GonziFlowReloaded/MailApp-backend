@@ -46,7 +46,7 @@ def register():
         username = request_data['username']
         password = request_data['password']
         if user_manager.get_user(username) is None:
-            user_manager.add_user(username, password)
+            user_manager.add_user(Users(username, password))
             return jsonify({'status': 'register successful'})
         else:
             return jsonify({'status': 'register failed'})
