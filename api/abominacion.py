@@ -2,6 +2,9 @@ from flask import Flask, request, jsonify
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user
 import os
 import datetime
+from flask_cors import CORS
+
+
 
 
 class Email():
@@ -120,6 +123,7 @@ class SortByReaded(EmailStrategy):
 
 
 app = Flask(__name__)
+CORS(app)
 login_manager_app = LoginManager(app)
 app.secret_key = os.urandom(12)
 user_manager = UserManager()
@@ -159,7 +163,7 @@ def register():
         username = request_data['username']
         password = request_data['password']
         if user_manager.get_user(username) is None:
-            user_manager.add_user(username, password)
+            user_manager.add_user(Users(username, password))
             return jsonify({'status': 'register successful'})
         else:
             return jsonify({'status': 'register failed'})
