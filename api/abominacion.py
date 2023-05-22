@@ -145,30 +145,36 @@ def index():
 
 @app.route('/login', methods=['POST'])
 def login():
-    if request.method == 'POST':
-        request_data = request.get_json()
-        username = request_data['username']
-        password = request_data['password']
-        if user_manager.login(username, password):
-            
-            user = user_manager.get_user(username)
-            login_user(user)
-            current_user.emails = user.emails
-            return jsonify({'status': 'login successful', 'mail': current_user.mail, 'nombre': current_user.nombre})
-        else:
-            return jsonify({'status': 'login failed'})
+    try:
 
+        if request.method == 'POST':
+            request_data = request.get_json()
+            username = request_data['username']
+            password = request_data['password']
+            if user_manager.login(username, password):
+                
+                user = user_manager.get_user(username)
+                login_user(user)
+                current_user.emails = user.emails
+                return jsonify({'status': 'login successful', 'mail': current_user.mail, 'nombre': current_user.nombre})
+            else:
+                return jsonify({'status': 'login failed'})
+    except:
+        return jsonify({'status': 'login failed'})
 @app.route('/register', methods=['POST'])
 def register():
-    if request.method == 'POST':
-        request_data = request.get_json()
-        username = request_data['username']
-        password = request_data['password']
-        if user_manager.get_user(username) is None:
-            user_manager.add_user(Users(username, password))
-            return jsonify({'status': 'register successful'})
-        else:
-            return jsonify({'status': 'register failed'})
+    try:
+        if request.method == 'POST':
+            request_data = request.get_json()
+            username = request_data['username']
+            password = request_data['password']
+            if user_manager.get_user(username) is None:
+                user_manager.add_user(Users(username, password))
+                return jsonify({'status': 'register successful'})
+            else:
+                return jsonify({'status': 'register failed'})
+    except:
+        return jsonify({'status': 'register failed'})
         
 @app.route('/logout', methods=['POST'])
 @login_required
@@ -182,19 +188,21 @@ def logout():
 #----------------------------------------------Buzon--------------------------------------------------------------#
 @app.route('/buzon', methods=['POST'])
 def buzon():
-    if request.method == 'POST':
-        lista = []
-        
-        request_data = request.get_json()
-        nombre = request_data['nombre']
-        usuario = user_manager.get_user(nombre)
-        lista_emails = usuario.emails
-        for mail in lista_emails:
-            mail_data = {'sender': mail.sender, 'subject': mail.subject, 'body': mail.body, 'date': mail.date, 'readed': mail.readed, 'id': mail.id}
-            lista.append(mail_data)
-        response_data = {'status': 'buzon successful', 'mail': usuario.mail, 'nombre': usuario.nombre, 'emails': lista}
-        return jsonify(response_data)
-    
+    try:
+        if request.method == 'POST':
+            lista = []
+            
+            request_data = request.get_json()
+            nombre = request_data['nombre']
+            usuario = user_manager.get_user(nombre)
+            lista_emails = usuario.emails
+            for mail in lista_emails:
+                mail_data = {'sender': mail.sender, 'subject': mail.subject, 'body': mail.body, 'date': mail.date, 'readed': mail.readed, 'id': mail.id}
+                lista.append(mail_data)
+            response_data = {'status': 'buzon successful', 'mail': usuario.mail, 'nombre': usuario.nombre, 'emails': lista}
+            return jsonify(response_data)
+    except:
+        return jsonify({'status': 'buzon failed'})
 
 @app.route('/buzon/<int:id>', methods=['GET'])
 @login_required
@@ -210,18 +218,21 @@ def buzon_mail(id):
 
 @app.route('/send', methods=['POST'])
 def send():
-    if request.method == 'POST':
-        request_data = request.get_json()
-        usuario = user_manager.get_user(request_data['nombre'])
-        mail = request_data['mail']
-        subject = request_data['subject']
-        body = request_data['body']
-        email_to_send = Email(subject, body, usuario.mail, mail)
-        try:
-            user_manager.sendMail(email_to_send=email_to_send)
-            return jsonify({'status': 'send successful'})
-        except:
-            return jsonify({'status': 'send failed'})
+    try:
+        if request.method == 'POST':
+            request_data = request.get_json()
+            usuario = user_manager.get_user(request_data['nombre'])
+            mail = request_data['mail']
+            subject = request_data['subject']
+            body = request_data['body']
+            email_to_send = Email(subject, body, usuario.mail, mail)
+            try:
+                user_manager.sendMail(email_to_send=email_to_send)
+                return jsonify({'status': 'send successful'})
+            except:
+                return jsonify({'status': 'send failed'})
+    except:
+        return jsonify({'status': 'send failed'})
             
 #----------------------------------------------Sort--------------------------------------------------------------#
 @app.route('/buzon/sort', methods=['POST'])
