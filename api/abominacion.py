@@ -159,8 +159,8 @@ def login():
                 return jsonify({'status': 'login successful', 'mail': current_user.mail, 'nombre': current_user.nombre})
             else:
                 return jsonify({'status': 'login failed'})
-    except:
-        return jsonify({'status': 'login failed'})
+    except Exception as e:
+        return jsonify({'status': 'login failed', 'error': str(e)})
 @app.route('/register', methods=['POST'])
 def register():
     try:
@@ -173,8 +173,8 @@ def register():
                 return jsonify({'status': 'register successful'})
             else:
                 return jsonify({'status': 'register failed'})
-    except:
-        return jsonify({'status': 'register failed'})
+    except Exception as e:
+        return jsonify({'status': 'register failed', 'error': str(e)})
         
 @app.route('/logout', methods=['POST'])
 @login_required
@@ -201,8 +201,8 @@ def buzon():
                 lista.append(mail_data)
             response_data = {'status': 'buzon successful', 'mail': usuario.mail, 'nombre': usuario.nombre, 'emails': lista}
             return jsonify(response_data)
-    except:
-        return jsonify({'status': 'buzon failed'})
+    except Exception as e:
+        return jsonify({'status': 'buzon failed', 'error': str(e)})
 
 @app.route('/buzon/<int:id>', methods=['GET'])
 @login_required
@@ -234,8 +234,8 @@ def send():
                 return jsonify({'status': 'send successful'})
             except:
                 return jsonify({'status': 'send failed'})
-    except:
-        return jsonify({'status': 'send failed'})
+    except Exception as e:
+        return jsonify({'status': 'send failed', 'error': str(e)})
             
 #----------------------------------------------Sort--------------------------------------------------------------#
 @app.route('/buzon/sort', methods=['POST'])
