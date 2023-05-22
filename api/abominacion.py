@@ -39,7 +39,7 @@ class EmailManager:
 
 class Users():
     def __init__(self, nombre, contraseña):
-        self.mail = nombre + "@EpicMailManager.com"
+        self.mail = nombre + "@fassmail.com"
         self.nombre = nombre
         self.contraseña = contraseña
         self.emails = []
@@ -119,6 +119,7 @@ class SortByReaded(EmailStrategy):
                 sortedMails.append(mail)
         
         return sortedMails
+
 
 
 
@@ -208,14 +209,14 @@ def buzon_mail(id):
 #----------------------------------------------Send--------------------------------------------------------------#
 
 @app.route('/send', methods=['POST'])
-@login_required
 def send():
     if request.method == 'POST':
         request_data = request.get_json()
+        usuario = user_manager.get_user(request_data['nombre'])
         mail = request_data['mail']
         subject = request_data['subject']
         body = request_data['body']
-        email_to_send = Email(subject, body, current_user.mail, mail)
+        email_to_send = Email(subject, body, usuario.mail, mail)
         try:
             user_manager.sendMail(email_to_send=email_to_send)
             return jsonify({'status': 'send successful'})
