@@ -169,7 +169,7 @@ def register():
             return jsonify({'status': 'register failed'})
         
 @app.route('/logout', methods=['POST'])
-# @login_required
+@login_required
 def logout():
     if request.method == 'POST':
         userActual = current_user.mail
@@ -179,7 +179,7 @@ def logout():
 
 #----------------------------------------------Buzon--------------------------------------------------------------#
 @app.route('/buzon', methods=['GET'])
-# @login_required
+@login_required
 def buzon():
     if request.method == 'GET':
         lista = []
@@ -191,7 +191,7 @@ def buzon():
     
 
 @app.route('/buzon/<int:id>', methods=['GET'])
-# @login_required
+@login_required
 def buzon_mail(id):
     if request.method == 'GET':
         current_user.emails[id].setReaded()
@@ -203,7 +203,7 @@ def buzon_mail(id):
 #----------------------------------------------Send--------------------------------------------------------------#
 
 @app.route('/send', methods=['POST'])
-# @login_required
+@login_required
 def send():
     if request.method == 'POST':
         request_data = request.get_json()
@@ -219,7 +219,7 @@ def send():
             
 #----------------------------------------------Sort--------------------------------------------------------------#
 @app.route('/buzon/sort', methods=['POST'])
-# @login_required
+@login_required
 def sort():
     if request.method == 'POST':
         lista = []
@@ -258,7 +258,7 @@ def sort():
 #----------------------------------------------Delete--------------------------------------------------------------#
 #A revisar
 @app.route('/buzon/delete', methods=['POST'])
-# @login_required
+@login_required
 def delete():
     if request.method == 'POST':
         request_data = request.get_json()
