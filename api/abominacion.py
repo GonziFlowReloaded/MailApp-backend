@@ -152,6 +152,7 @@ def login():
             
             user = user_manager.get_user(username)
             login_user(user)
+            current_user.emails = user.emails
             return jsonify({'status': 'login successful', 'mail': user.mail, 'nombre': user.nombre})
         else:
             return jsonify({'status': 'login failed'})
@@ -179,11 +180,12 @@ def logout():
 
 #----------------------------------------------Buzon--------------------------------------------------------------#
 @app.route('/buzon', methods=['GET'])
-# @login_required
+@login_required
 def buzon():
     if request.method == 'GET':
         lista = []
-        for mail in current_user.emails:
+        lista_emails = user_manager.get_user(current_user.nombre).emails
+        for mail in lista_emails:
             mail_data = {'sender': mail.sender, 'subject': mail.subject, 'body': mail.body, 'date': mail.date, 'readed': mail.readed, 'id': mail.id}
             lista.append(mail_data)
         response_data = {'status': 'buzon successful', 'mail': current_user.mail, 'nombre': current_user.nombre, 'emails': lista}
