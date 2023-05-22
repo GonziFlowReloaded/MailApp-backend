@@ -180,7 +180,6 @@ def logout():
 
 #----------------------------------------------Buzon--------------------------------------------------------------#
 @app.route('/buzon', methods=['POST'])
-@login_required
 def buzon():
     if request.method == 'POST':
         lista = []
