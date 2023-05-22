@@ -153,7 +153,7 @@ def login():
             user = user_manager.get_user(username)
             login_user(user)
             current_user.emails = user.emails
-            return jsonify({'status': 'login successful', 'mail': user.mail, 'nombre': user.nombre})
+            return jsonify({'status': 'login successful', 'mail': current_user.mail, 'nombre': current_user.nombre, 'token': current_user.get_id()})
         else:
             return jsonify({'status': 'login failed'})
 
@@ -269,5 +269,5 @@ def delete():
         return jsonify({'status': 'delete successful', 'mail': current_user.mail, 'nombre': current_user.nombre, 'emails': current_user.emails})
     
 
-# if __name__ == '__main__':
-#     app.run(debug=True, port=4000)
+if __name__ == '__main__':
+    app.run(debug=True, port=4000)
