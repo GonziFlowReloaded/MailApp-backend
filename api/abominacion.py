@@ -179,7 +179,7 @@ def logout():
 
 #----------------------------------------------Buzon--------------------------------------------------------------#
 @app.route('/buzon', methods=['GET'])
-@login_required
+# @login_required
 def buzon():
     if request.method == 'GET':
         lista = []
