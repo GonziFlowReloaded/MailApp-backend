@@ -186,12 +186,12 @@ def buzon():
         
         request_data = request.get_json()
         nombre = request_data['nombre']
-
-        lista_emails = user_manager.get_user(nombre).emails
+        usuario = user_manager.get_user(nombre)
+        lista_emails = usuario.emails
         for mail in lista_emails:
             mail_data = {'sender': mail.sender, 'subject': mail.subject, 'body': mail.body, 'date': mail.date, 'readed': mail.readed, 'id': mail.id}
             lista.append(mail_data)
-        response_data = {'status': 'buzon successful', 'mail': current_user.mail, 'nombre': current_user.nombre, 'emails': lista}
+        response_data = {'status': 'buzon successful', 'mail': usuario.mail, 'nombre': usuario.nombre, 'emails': lista}
         return jsonify(response_data)
     
 
