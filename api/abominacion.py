@@ -222,13 +222,12 @@ def send():
         if request.method == 'POST':
             request_data = request.get_json()
             usuario = user_manager.get_user(request_data['nombre'])
-            mails = request_data['mail']
-            mails.replace(" ", "")
-            mails.split(",")
+            mail = request_data['mail']
+            
             subject = request_data['subject']
             body = request_data['body']
-            for mail in mails:
-                email_to_send = Email(subject, body, usuario.mail, mail)
+            
+            email_to_send = Email(subject, body, usuario.mail, mail)
             try:
                 user_manager.sendMail(email_to_send=email_to_send)
                 return jsonify({'status': 'send successful'})
