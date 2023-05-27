@@ -5,6 +5,7 @@ from api.classes.user import Users
 import os
 from api.classes.email import Email
 from api.classes.sortStrategy import SortByDate, SortBySender, SortBySubject, SortByReaded
+import jwt
 
 app = Flask(__name__)
 login_manager_app = LoginManager(app)
@@ -32,10 +33,13 @@ def login():
         username = request_data['username']
         password = request_data['password']
         if user_manager.login(username, password):
-            
             user = user_manager.get_user(username)
             login_user(user)
-            return jsonify({'status': 'login successful', 'mail': user.mail, 'nombre': user.nombre})
+            
+            # Generar el token de validación
+            token = jwt.encode({'username': username}, 'secret_key', algorithm='HS256')
+            
+            return jsonify({'status': 'login successful', 'token': token.decode('utf-8'), 'mail': user.mail, 'nombre': user.nombre})
         else:
             return jsonify({'status': 'login failed'})
 
