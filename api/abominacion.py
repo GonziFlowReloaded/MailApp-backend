@@ -204,15 +204,25 @@ def buzon():
     except Exception as e:
         return jsonify({'status': 'buzon failed', 'error': str(e)})
 
-@app.route('/buzon/<int:id>', methods=['GET'])
-@login_required
+@app.route('/buzon/<int:id>', methods=['POST'])
 def buzon_mail(id):
-    if request.method == 'GET':
+    if request.method == 'POST':
+        request_data = request.get_json()
+        nombre = request_data['nombre']
+
+        current_user = user_manager.get_user(nombre)
+
         current_user.emails[id].setReaded()
-        mail = current_user.emails[id]
-        mail_data = {'sender': mail.sender, 'subject': mail.subject, 'body': mail.body, 'date': mail.date, 'readed': mail.readed, 'id': mail.id}
-        response_data = {'status': 'buzon successful', 'mail': current_user.mail, 'nombre': current_user.nombre, 'emails': mail_data}
-        return jsonify(response_data)
+        try:
+            mail = current_user.emails[id]
+            mail_data = {'sender': mail.sender, 'subject': mail.subject, 'body': mail.body, 'date': mail.date, 'readed': mail.readed, 'id': mail.id}
+            response_data = {'status': 'buzon successful', 'mail': current_user.mail, 'nombre': current_user.nombre, 'emails': mail_data}
+            return jsonify(response_data)
+        except Exception as e:
+            return jsonify({
+                'status': 'buzon failed',
+                'error': "No se pudo encontrar el mail"
+            })
 
 #----------------------------------------------Send--------------------------------------------------------------#
 
@@ -237,53 +247,59 @@ def send():
         return jsonify({'status': 'send failed', 'error': str(e)})
             
 #----------------------------------------------Sort--------------------------------------------------------------#
-@app.route('/buzon/sort', methods=['POST'])
-@login_required
-def sort():
-    if request.method == 'POST':
-        lista = []
-        request_data = request.get_json()
-        sort = request_data['sort']
-        if sort == 'readed':
-            sorter = SortByReaded()
-            for mail in sorter.sort_emails(current_user.emails):
-                mail_data = {'sender': mail.sender, 'subject': mail.subject, 'body': mail.body, 'date': mail.date, 'readed': mail.readed, 'id': mail.id}
-                lista.append(mail_data)
-            response_data = {'status': 'buzon successful', 'mail': current_user.mail, 'nombre': current_user.nombre, 'emails': lista}
+# @app.route('/buzon/sort', methods=['POST'])
+# @login_required
+# def sort():
+#     if request.method == 'POST':
+#         lista = []
+#         request_data = request.get_json()
+#         sort = request_data['sort']
+#         if sort == 'readed':
+#             sorter = SortByReaded()
+#             for mail in sorter.sort_emails(current_user.emails):
+#                 mail_data = {'sender': mail.sender, 'subject': mail.subject, 'body': mail.body, 'date': mail.date, 'readed': mail.readed, 'id': mail.id}
+#                 lista.append(mail_data)
+#             response_data = {'status': 'buzon successful', 'mail': current_user.mail, 'nombre': current_user.nombre, 'emails': lista}
 
-        elif sort == 'date':
-            sorter = SortByDate()
-            for mail in sorter.sort_emails(current_user.emails):
-                mail_data = {'sender': mail.sender, 'subject': mail.subject, 'body': mail.body, 'date': mail.date, 'readed': mail.readed, 'id': mail.id}
-                lista.append(mail_data)
-            response_data = {'status': 'buzon successful', 'mail': current_user.mail, 'nombre': current_user.nombre, 'emails': lista}
+#         elif sort == 'date':
+#             sorter = SortByDate()
+#             for mail in sorter.sort_emails(current_user.emails):
+#                 mail_data = {'sender': mail.sender, 'subject': mail.subject, 'body': mail.body, 'date': mail.date, 'readed': mail.readed, 'id': mail.id}
+#                 lista.append(mail_data)
+#             response_data = {'status': 'buzon successful', 'mail': current_user.mail, 'nombre': current_user.nombre, 'emails': lista}
         
-        elif sort == 'sender':
-            sorter = SortBySender()
-            for mail in sorter.sort_emails(current_user.emails):
-                mail_data = {'sender': mail.sender, 'subject': mail.subject, 'body': mail.body, 'date': mail.date, 'readed': mail.readed, 'id': mail.id}
-                lista.append(mail_data)
-            response_data = {'status': 'buzon successful', 'mail': current_user.mail, 'nombre': current_user.nombre, 'emails': lista}
+#         elif sort == 'sender':
+#             sorter = SortBySender()
+#             for mail in sorter.sort_emails(current_user.emails):
+#                 mail_data = {'sender': mail.sender, 'subject': mail.subject, 'body': mail.body, 'date': mail.date, 'readed': mail.readed, 'id': mail.id}
+#                 lista.append(mail_data)
+#             response_data = {'status': 'buzon successful', 'mail': current_user.mail, 'nombre': current_user.nombre, 'emails': lista}
         
-        elif sort == 'subject':
-            sorter = SortBySubject()
-            for mail in sorter.sort_emails(current_user.emails):
-                mail_data = {'sender': mail.sender, 'subject': mail.subject, 'body': mail.body, 'date': mail.date, 'readed': mail.readed, 'id': mail.id}
-                lista.append(mail_data)
-            response_data = {'status': 'buzon successful', 'mail': current_user.mail, 'nombre': current_user.nombre, 'emails': lista}
+#         elif sort == 'subject':
+#             sorter = SortBySubject()
+#             for mail in sorter.sort_emails(current_user.emails):
+#                 mail_data = {'sender': mail.sender, 'subject': mail.subject, 'body': mail.body, 'date': mail.date, 'readed': mail.readed, 'id': mail.id}
+#                 lista.append(mail_data)
+#             response_data = {'status': 'buzon successful', 'mail': current_user.mail, 'nombre': current_user.nombre, 'emails': lista}
         
-        return jsonify(response_data)
+#         return jsonify(response_data)
 
 #----------------------------------------------Delete--------------------------------------------------------------#
 #A revisar
-@app.route('/buzon/delete', methods=['POST'])
-@login_required
-def delete():
+@app.route('/buzon/delete/<int:id>', methods=['POST'])
+def delete(id):
     if request.method == 'POST':
-        request_data = request.get_json()
-        index = request_data['index']
-        current_user.delete_email(index)
-        return jsonify({'status': 'delete successful', 'mail': current_user.mail, 'nombre': current_user.nombre, 'emails': current_user.emails})
+        try:
+            request_data = request.get_json()
+            nombre = request_data['nombre']
+
+            current_user = user_manager.get_user(nombre)
+            
+            current_user.emails.pop(id)
+            
+            return jsonify({'status': 'delete successful'})
+        except Exception as e:
+            return jsonify({'status': 'delete failed', 'error': str(e)})
     
 
 if __name__ == '__main__':

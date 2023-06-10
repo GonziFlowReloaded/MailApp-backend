@@ -6,9 +6,13 @@ import os
 from api.classes.email import Email
 from api.classes.sortStrategy import SortByDate, SortBySender, SortBySubject, SortByReaded
 import jwt
+from flask_jwt_extended import jwt_required, get_jwt_identity
+from flask_jwt_extended import JWTManager
 
 app = Flask(__name__)
 login_manager_app = LoginManager(app)
+app.config['JWT_SECRET_KEY'] = 'LaDescaradaClaveDeGonziflow'  # Reemplaza con una clave secreta fuerte y segura
+jwt = JWTManager(app)
 app.secret_key = os.urandom(12)
 user_manager = UserManager()
 user_manager.add_user(Users('usuario1', 'contraseña1'))
@@ -56,7 +60,7 @@ def register():
             return jsonify({'status': 'register failed'})
         
 @app.route('/logout', methods=['POST'])
-@login_required
+@jwt_required
 def logout():
     if request.method == 'POST':
         userActual = current_user.mail
@@ -66,15 +70,35 @@ def logout():
 
 #----------------------------------------------Buzon--------------------------------------------------------------#
 @app.route('/buzon', methods=['GET'])
-@login_required
+@jwt_required
 def buzon():
-    if request.method == 'GET':
-        lista = []
-        for mail in current_user.emails:
-            mail_data = {'sender': mail.sender, 'subject': mail.subject, 'body': mail.body, 'date': mail.date, 'readed': mail.readed, 'id': mail.id}
-            lista.append(mail_data)
-        response_data = {'status': 'buzon successful', 'mail': current_user.mail, 'nombre': current_user.nombre, 'emails': lista}
-        return jsonify(response_data)
+    username = get_jwt_identity()
+    user = user_manager.get_user(username.nombre)  # Reemplaza "user_manager" con la instancia adecuada del administrador de usuarios
+
+    if user is None:
+        return jsonify({'status': 'user not found'}), 404
+
+    emails = user.emails  # Suponiendo que el modelo de usuario tiene una propiedad "emails" que contiene los correos electrónicos del usuario
+
+    lista = []
+    for mail in emails:
+        mail_data = {
+            'sender': mail.sender,
+            'subject': mail.subject,
+            'body': mail.body,
+            'date': mail.date,
+            'readed': mail.readed,
+            'id': mail.id
+        }
+        lista.append(mail_data)
+
+    response_data = {
+        'status': 'buzon successful',
+        'mail': user.mail,
+        'nombre': user.nombre,
+        'emails': lista
+    }
+    return jsonify(response_data)
     
 
 @app.route('/buzon/<int:id>', methods=['GET'])
