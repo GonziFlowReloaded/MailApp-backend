@@ -60,8 +60,8 @@ class Users():
     def is_authenticated(self):
         return True
 
-    def add_contact(self, contact):
-        self.contactos.append([contact.nombre, contact.mail])
+    def add_contact(self, contact_name, contact_mail):
+        self.contactos.append([contact_name, contact_mail])
     
 
 
@@ -312,7 +312,6 @@ def delete(id):
 def contactos_add():
     try:
         if request.method == 'POST':
-            lista = []
             request_data = request.get_json()
             nombre = request_data['nombre']
             usuario_acutal = user_manager.get_user(nombre)
