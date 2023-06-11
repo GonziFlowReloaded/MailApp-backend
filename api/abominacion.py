@@ -62,6 +62,9 @@ class Users():
 
     def add_contact(self, contact_name, contact_mail):
         self.contactos.append([contact_name, contact_mail])
+
+    def get_contacts(self):
+        return self.contactos
     
 
 
@@ -335,8 +338,10 @@ def contactos_get():
             nombre = request_data['nombre']
             usuario_acutal = user_manager.get_user(nombre)
 
-            for contacto in usuario_acutal.contactos:
-                lista.append({'nombre': contacto.nombre, 'mail': contacto.mail})
+            lista_contactos = usuario_acutal.get_contacts()
+            for contacto in lista_contactos:
+                lista.append({'nombre': contacto[0], 'mail': contacto[1]})
+            
             return jsonify({'status': "contactos successful", 'contactos': lista})
     except Exception as e:
         return jsonify({'status': 'contactos failed', 'error': str(e)})
