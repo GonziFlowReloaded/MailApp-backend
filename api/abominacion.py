@@ -45,6 +45,7 @@ class Users():
         self.emails = []
         self.is_active = True 
         self.id = 0
+        self.contactos = []
 
     def add_email(self, email):
         email.id = len(self.emails)
@@ -58,6 +59,9 @@ class Users():
     
     def is_authenticated(self):
         return True
+
+    def add_contact(self, contact):
+        self.contactos.append([contact.nombre, contact.mail])
     
 
 
@@ -303,6 +307,41 @@ def delete(id):
         except Exception as e:
             return jsonify({'status': 'delete failed', 'error': str(e)})
     
+#----------------------------------------------Contactos--------------------------------------------------------------#
+@app.route('/contactos_add', methods=['POST'])
+def contactos_add():
+    try:
+        if request.method == 'POST':
+            lista = []
+            request_data = request.get_json()
+            nombre = request_data['nombre']
+            usuario_acutal = user_manager.get_user(nombre)
+
+            nombre_contacto = request_data['nombre_contacto']
+            mail_contacto = request_data['mail_contacto']
+            
+            usuario_acutal.add_contact(nombre_contacto, mail_contacto)
+
+
+            return jsonify({'status': "contactos successful", 'contacto_nombre': nombre_contacto, 'contacto_mail': mail_contacto})
+    except Exception as e:
+        return jsonify({'status': 'contactos failed', 'error': str(e)})
+    
+@app.route('/contactos_get', methods=['POST'])
+def contactos_get():
+    try:
+        if request.method == 'POST':
+            lista = []
+            request_data = request.get_json()
+            nombre = request_data['nombre']
+            usuario_acutal = user_manager.get_user(nombre)
+
+            for contacto in usuario_acutal.contactos:
+                lista.append({'nombre': contacto.nombre, 'mail': contacto.mail})
+            return jsonify({'status': "contactos successful", 'contactos': lista})
+    except Exception as e:
+        return jsonify({'status': 'contactos failed', 'error': str(e)})
+
 
 if __name__ == '__main__':
     app.run(debug=True, port=4000)
