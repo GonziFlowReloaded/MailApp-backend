@@ -285,7 +285,7 @@ def send():
 #         return jsonify(response_data)
 
 #----------------------------------------------Delete--------------------------------------------------------------#
-#A revisar
+#Anda bien
 @app.route('/buzon/delete/<int:id>', methods=['POST'])
 def delete(id):
     if request.method == 'POST':
@@ -295,9 +295,11 @@ def delete(id):
 
             current_user = user_manager.get_user(nombre)
             
-            current_user.emails.pop(id)
+            mail_borrado = current_user.emails.pop(id)
+
+
             
-            return jsonify({'status': 'delete successful'})
+            return jsonify({'status': 'delete successful', 'mail': mail_borrado.sender, 'subject': mail_borrado.subject, 'body': mail_borrado.body, 'date': mail_borrado.date, 'readed': mail_borrado.readed, 'id': mail_borrado.id})
         except Exception as e:
             return jsonify({'status': 'delete failed', 'error': str(e)})
     
